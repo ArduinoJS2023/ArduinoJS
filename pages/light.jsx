@@ -19,7 +19,7 @@ const Light = () => {
   const [bubblesDancing, setBubblesDancing] = useState(false); // State for bubble animation
   const [mouseDirection, setMouseDirection] = useState(""); // State for mouse direction
 
-  const innerCircleRadius = 80; // Define the radius of the inner circle
+  const innerCircleRadius = 90; // Define the radius of the inner circle
   let prevX = 0;
   let prevY = 0;
 
@@ -185,7 +185,7 @@ const Light = () => {
           }))
         );
       }
-    }, 40);
+    }, 30);
 
     return () => {
       clearInterval(moveBubblesInterval);

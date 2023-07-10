@@ -9,17 +9,17 @@ const opn = require("opn");
 
 const startUrl = "http://localhost:3000";
 const port = 3000;
-const boardPort = "COM9";
+const boardPort = "COM4";
 
 // pin setup
 const blue = 3;
 const green = 5;
 const red = 6;
 
-const servoA = 9
-const servoB = 10
-const servoC = 11
-const servoD = 12
+const servoA = 9;
+const servoB = 10;
+const servoC = 11;
+const servoD = 12;
 
 let board = new Board({ repl: false, port: boardPort });
 
