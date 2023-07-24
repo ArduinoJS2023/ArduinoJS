@@ -4,54 +4,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import styles from "../styles/Cool.module.css"
 import io from "socket.io-client";
-
-const ArrowUp = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M5 1L1 9H9L5 1z" fill={fill} />
-    </svg>
-);
-
-const ArrowDown = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M5 9L1 1H9L5 9z" fill={fill} />
-    </svg>
-);
-
-const ArrowLeft = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M1 5L9 1V9L1 5z" fill={fill} />
-    </svg>
-);
-
-const ArrowRight = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M9 5L1 9V1L9 5z" fill={fill} />
-    </svg>
-);
-
-const ArrowIn = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M5 1L1 9H9L5 1z" fill={fill} />
-    </svg>
-);
-
-const ArrowOut = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M5 9L1 1H9L5 9z" fill={fill} />
-    </svg>
-);
-
-const ArrowClockwise = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M1 5L9 1V9L1 5z" fill={fill} />
-    </svg>
-);
-
-const ArrowCounterClockwise = ({ fill }) => (
-    <svg width="40" height="40" viewBox="0 0 10 10">
-        <path d="M9 5L1 9V1L9 5z" fill={fill} />
-    </svg>
-);
+import Arrow from '../components/icons/Arrow';
+import { Direction } from '../constants/directions';
+import { hslToHex } from '../utils/colors';
 
 const Cool = () => {
     const [colorIndex, setColorIndex] = useState(0);
@@ -74,20 +29,6 @@ const Cool = () => {
             }
         }
     }, []);
-
-    const hslToHex = (h, s, l) => {
-        l /= 100;
-        const a = s * Math.min(l, 1 - l) / 100;
-        const f = n => {
-            const k = (n + h / 30) % 12;
-            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-            return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and ensure 2 digits
-        };
-        if (socket.current) {
-            socket.current.emit("color change", `#${f(0)}${f(8)}${f(4)}`); // emit the "color change" event
-        }
-        return `#${f(0)}${f(8)}${f(4)}`;
-    }
 
     let arrowFillColor = hslToHex(colorIndex, 100, 50);
 
@@ -189,16 +130,18 @@ const Cool = () => {
             <Link href="/light">
                 <button className={styles["cool-button"]}>Go to Light</button>
             </Link>
+            
             <div className={styles["button-group"]}>
-                <div className={`${styles.arrow} ${styles.up}`} onMouseDown={increaseVertical} onMouseUp={stopChange}><ArrowUp fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.down}`} onMouseDown={decreaseVertical} onMouseUp={stopChange}><ArrowDown fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.left}`} onMouseDown={increaseHorizontal} onMouseUp={stopChange}><ArrowLeft fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.right}`} onMouseDown={decreaseHorizontal} onMouseUp={stopChange}><ArrowRight fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.out}`} onMouseDown={increaseDepth} onMouseUp={stopChange}><ArrowOut fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.in}`} onMouseDown={decreaseDepth} onMouseUp={stopChange}><ArrowIn fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.clockwise}`} onMouseDown={increaseRotation} onMouseUp={stopChange}><ArrowClockwise fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.counterClockwise}`} onMouseDown={decreaseRotation} onMouseUp={stopChange}><ArrowCounterClockwise fill={arrowFillColor} /></div>
+                <div className={`${styles.arrow} ${styles.up}`} onMouseDown={increaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
+                <div className={`${styles.arrow} ${styles.down}`} onMouseDown={decreaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.down} /></div>
+                <div className={`${styles.arrow} ${styles.left}`} onMouseDown={increaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.left} /></div>
+                <div className={`${styles.arrow} ${styles.right}`} onMouseDown={decreaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.right} /></div>
+                <div className={`${styles.arrow} ${styles.out}`} onMouseDown={increaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.down} /></div>
+                <div className={`${styles.arrow} ${styles.in}`} onMouseDown={decreaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
+                <div className={`${styles.arrow} ${styles.clockwise}`} onMouseDown={increaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.left} /></div>
+                <div className={`${styles.arrow} ${styles.counterClockwise}`} onMouseDown={decreaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.right} /></div>
             </div>
+            
             <div className={styles.monitor}>
                 <p>Horizontal Index: {horizontalIndex}</p>
                 <p>Vertical Index: {verticalIndex}</p>
