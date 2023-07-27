@@ -6,8 +6,5 @@ export const hslToHex = (h, s, l) => {
         const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
         return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and ensure 2 digits
     };
-    if (socket.current) {
-        socket.current.emit("color change", `#${f(0)}${f(8)}${f(4)}`); // emit the "color change" event
-    }
     return `#${f(0)}${f(8)}${f(4)}`;
 }

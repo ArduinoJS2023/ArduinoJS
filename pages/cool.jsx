@@ -5,7 +5,7 @@ import Link from 'next/link';
 import styles from "../styles/Cool.module.css"
 import io from "socket.io-client";
 import Arrow from '../components/icons/Arrow';
-import { Direction } from '../constants/directions';
+import { Directions } from '../constants/directions';
 import { hslToHex } from '../utils/colors';
 
 const Cool = () => {
@@ -16,30 +16,32 @@ const Cool = () => {
     const [rotationIndex, setRotationIndex] = useState(180); // New state
     const socket = useRef();
     const intervalId = useRef(null);
+    let arrowFillColor = hslToHex(colorIndex, 100, 50);
 
     useEffect(() => {
         // Create socket connection
         socket.current = io();
+        
+        // Set Interval for change color
+        const interval = setInterval(() => {
+            setColorIndex((prevIndex) => (prevIndex < 360 ? prevIndex + 1 : 0));
+        }, 10);
 
         // Clean up function
         return () => {
+            clearInterval(interval);
             if (socket.current) {
                 socket.current.disconnect();
                 socket.current = null;
             }
         }
     }, []);
-
-    let arrowFillColor = hslToHex(colorIndex, 100, 50);
-
+    
     useEffect(() => {
-        const interval = setInterval(() => {
-            setColorIndex((prevIndex) => (prevIndex < 360 ? prevIndex + 1 : 0));
-        }, 10);
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
+        if (socket?.current) {
+            socket.current.emit("color change", arrowFillColor); // emit the "color change" event
+        }
+    }, [colorIndex])
 
     const increaseHorizontal = () => {
         intervalId.current = setInterval(() => {
@@ -130,18 +132,18 @@ const Cool = () => {
             <Link href="/light">
                 <button className={styles["cool-button"]}>Go to Light</button>
             </Link>
-            
+
             <div className={styles["button-group"]}>
                 <div className={`${styles.arrow} ${styles.up}`} onMouseDown={increaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.down}`} onMouseDown={decreaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.down} /></div>
-                <div className={`${styles.arrow} ${styles.left}`} onMouseDown={increaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.left} /></div>
-                <div className={`${styles.arrow} ${styles.right}`} onMouseDown={decreaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.right} /></div>
-                <div className={`${styles.arrow} ${styles.out}`} onMouseDown={increaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.down} /></div>
+                <div className={`${styles.arrow} ${styles.down}`} onMouseDown={decreaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.down} /></div>
+                <div className={`${styles.arrow} ${styles.left}`} onMouseDown={increaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.left} /></div>
+                <div className={`${styles.arrow} ${styles.right}`} onMouseDown={decreaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.right} /></div>
+                <div className={`${styles.arrow} ${styles.out}`} onMouseDown={increaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.down} /></div>
                 <div className={`${styles.arrow} ${styles.in}`} onMouseDown={decreaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.clockwise}`} onMouseDown={increaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.left} /></div>
-                <div className={`${styles.arrow} ${styles.counterClockwise}`} onMouseDown={decreaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Direction.right} /></div>
+                <div className={`${styles.arrow} ${styles.clockwise}`} onMouseDown={increaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.left} /></div>
+                <div className={`${styles.arrow} ${styles.counterClockwise}`} onMouseDown={decreaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.right} /></div>
             </div>
-            
+
             <div className={styles.monitor}>
                 <p>Horizontal Index: {horizontalIndex}</p>
                 <p>Vertical Index: {verticalIndex}</p>
