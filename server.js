@@ -7,8 +7,8 @@ const { Server } = require("socket.io");
 const { Board, Led, Servo } = require("johnny-five");
 const opn = require("opn");
 
-const startUrl = "http://localhost:3000";
 const port = 3000;
+const startUrl = `http://localhost:${port}`;
 const boardPort = "COM4";
 
 // pin setup
@@ -23,7 +23,7 @@ const servoD = 12;
 
 let board = new Board({ repl: false, port: boardPort });
 
-// opn(startUrl, { app: "Google Chrome" });
+opn(`${startUrl}/cool`);
 
 const dev = process.env.NODE_ENV !== "production";
 const next = require("next");
