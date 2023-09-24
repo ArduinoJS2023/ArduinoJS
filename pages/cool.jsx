@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import styles from "../styles/Cool.module.css"
 import io from "socket.io-client";
-import Arrow from '../components/icons/Arrow';
+import Arrow2 from '../components/icons/Arrow2';
 import { Directions } from '../constants/directions';
 import { hslToHex } from '../utils/colors';
+import Button from '../components/button/Button';
 
 const Cool = () => {
     const [colorIndex, setColorIndex] = useState(0);
@@ -21,7 +21,7 @@ const Cool = () => {
     useEffect(() => {
         // Create socket connection
         socket.current = io();
-        
+
         // Set Interval for change color
         const interval = setInterval(() => {
             setColorIndex((prevIndex) => (prevIndex < 360 ? prevIndex + 1 : 0));
@@ -36,7 +36,7 @@ const Cool = () => {
             }
         }
     }, []);
-    
+
     useEffect(() => {
         if (socket?.current) {
             socket.current.emit("color change", arrowFillColor); // emit the "color change" event
@@ -127,21 +127,31 @@ const Cool = () => {
         clearInterval(intervalId.current);
     };
 
+    const btns = useMemo(() => [
+        { style: styles.up, action: increaseVertical },
+        { dir: Directions.down, style: styles.down, action: decreaseVertical },
+        { dir: Directions.left, style: styles.left, action: increaseHorizontal },
+        { dir: Directions.right, style: styles.right, action: decreaseHorizontal },
+        { style: styles.in, action: decreaseDepth },
+        { dir: Directions.down, style: styles.out, action: increaseDepth },
+        { dir: Directions.left, style: styles.clockwise, action: increaseRotation },
+        { dir: Directions.right, style: styles.counterClockwise, action: decreaseRotation }
+    ], []);
+
     return (
         <div className={styles["bg-container"]}>
-            <Link href="/light">
-                <button className={styles["cool-button"]}>Go to Light</button>
-            </Link>
-
-            <div className={styles["button-group"]}>
-                <div className={`${styles.arrow} ${styles.up}`} onMouseDown={increaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.down}`} onMouseDown={decreaseVertical} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.down} /></div>
-                <div className={`${styles.arrow} ${styles.left}`} onMouseDown={increaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.left} /></div>
-                <div className={`${styles.arrow} ${styles.right}`} onMouseDown={decreaseHorizontal} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.right} /></div>
-                <div className={`${styles.arrow} ${styles.out}`} onMouseDown={increaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.down} /></div>
-                <div className={`${styles.arrow} ${styles.in}`} onMouseDown={decreaseDepth} onMouseUp={stopChange}><Arrow fill={arrowFillColor} /></div>
-                <div className={`${styles.arrow} ${styles.clockwise}`} onMouseDown={increaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.left} /></div>
-                <div className={`${styles.arrow} ${styles.counterClockwise}`} onMouseDown={decreaseRotation} onMouseUp={stopChange}><Arrow fill={arrowFillColor} degrees={Directions.right} /></div>
+            <div className={styles.controler} onMouseUp={() => stopChange()}>
+                <div className={styles["button-group"]}>
+                    {btns.map((btn, idx) => <Button
+                        key={idx + btn.style}
+                        label={<Arrow2 fill={arrowFillColor} degrees={btn.dir} />}
+                        className={`${styles.arrow} ${btn.style}`}
+                        // onMouseDown={() => btn.action()}
+                        // onMouseUp={() => stopChange()}
+                        onTouchStart={() => btn.action()}
+                        onTouchEnd={() => stopChange()}
+                    />)}
+                </div>
             </div>
 
             <div className={styles.monitor}>
@@ -150,7 +160,7 @@ const Cool = () => {
                 <p>Depth Index: {depthIndex}</p>
                 <p>Rotation Index: {rotationIndex}</p>
             </div>
-        </div>
+        </div >
     );
 }
 export default Cool;
