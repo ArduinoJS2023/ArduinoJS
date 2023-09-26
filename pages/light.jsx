@@ -194,9 +194,6 @@ const Light = () => {
 
   return (
     <div className={styles.container}>
-      <Link href="/cool">
-        <button className={styles["cool-button"]}>Go to Light</button>
-      </Link>
       <div className={styles.monitor}>{mouseDirection}</div>
       <div
         id="color-circle"

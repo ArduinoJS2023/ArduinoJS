@@ -32,10 +32,10 @@ const nextHandler = nextApp.getRequestHandler();
 
 board.on("ready", () => {
   const rgb = new Led.RGB([red, green, blue]);
-  const servo1 = new Servo(servoA); // Create a new Servo object. Assume the servo is attached to pin 10.
+  const servo1 = new Servo(servoA); // Create a new Servo object. Assume the servo is attached to pin 9.
   const servo2 = new Servo(servoB); // Create a new Servo object. Assume the servo is attached to pin 10.
-  const servo3 = new Servo(servoC); // Create a new Servo object. Assume the servo is attached to pin 10.
-  const servo4 = new Servo(servoD); // Create a new Servo object. Assume the servo is attached to pin 10.
+  const servo3 = new Servo(servoC); // Create a new Servo object. Assume the servo is attached to pin 11.
+  const servo4 = new Servo(servoD); // Create a new Servo object. Assume the servo is attached to pin 12.
 
   nextApp.prepare().then(() => {
     app.get("*", (req, res) => {
